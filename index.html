@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora de Preço de Venda</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl">
+      <h1 class="text-2xl font-bold mb-6 text-center">
+        Calculadora de Preço de Venda
+      </h1>
+      <form id="priceForm" class="space-y-6">
+        <!-- Tipo do site -->
+        <div>
+          <label class="block font-semibold mb-2">Tipo do site</label>
+          <div class="space-y-2">
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="siteType"
+                value="onepage"
+                class="mr-2"
+                required
+              />
+              One Page
+              <span class="ml-2 text-xs text-gray-500">(3-5 dias)</span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="siteType"
+                value="landing"
+                class="mr-2"
+              />
+              Landing Page
+              <span class="ml-2 text-xs text-gray-500">(5-7 dias)</span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="siteType"
+                value="institucional"
+                class="mr-2"
+              />
+              Site Institucional
+              <span class="ml-2 text-xs text-gray-500">(7-12 dias)</span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="siteType"
+                value="ecommerce"
+                class="mr-2"
+              />
+              E-commerce
+              <span class="ml-2 text-xs text-gray-500">(15-25 dias)</span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="siteType"
+                value="sistema"
+                class="mr-2"
+              />
+              Sistema de Gestão Web
+              <span class="ml-2 text-xs text-gray-500">(20-40 dias)</span>
+            </label>
+          </div>
+        </div>
+        <!-- Página extra -->
+        <div>
+          <label class="block font-semibold mb-2">Página extra</label>
+          <div class="flex items-center space-x-2">
+            <input
+              type="number"
+              id="extraPages"
+              name="extraPages"
+              min="0"
+              value="0"
+              class="w-20 p-2 border rounded"
+              disabled
+            />
+            <span class="text-sm text-gray-500">Quantidade</span>
+          </div>
+          <p id="extraPagesNote" class="text-xs text-red-500 mt-1 hidden">
+            One Page não permite páginas extras.
+          </p>
+        </div>
+        <!-- Complementos -->
+        <div>
+          <label class="block font-semibold mb-2">Complementos</label>
+          <div class="space-y-2">
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                name="complementos"
+                value="pagamento"
+                class="mr-2"
+              />
+              Integração com Pagamento
+            </label>
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                name="complementos"
+                value="whatsapp"
+                class="mr-2"
+              />
+              Integração com Whatsapp
+            </label>
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                name="complementos"
+                value="login"
+                class="mr-2"
+              />
+              Área de login com dashboard administrativa
+            </label>
+          </div>
+        </div>
+        <!-- Serviços adicionais -->
+        <div>
+          <label class="block font-semibold mb-2">Serviços adicionais</label>
+          <div class="space-y-2">
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                name="servicos"
+                value="manutencao"
+                class="mr-2"
+              />
+              Manutenção mensal
+            </label>
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                name="servicos"
+                value="atualizacoes"
+                class="mr-2"
+              />
+              Atualizações futuras
+            </label>
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 font-semibold"
+        >
+          Calcular Valor
+        </button>
+      </form>
+      <div
+        id="result"
+        class="mt-6 text-center text-lg font-bold text-green-600"
+      ></div>
+      <div id="pages" class="mt-2 text-center text-md text-gray-700"></div>
+      <div id="time" class="mt-2 text-center text-md text-gray-700"></div>
+    </div>
+    <script>
+      // Habilita/desabilita campo de página extra conforme tipo do site
+      const siteTypeRadios = document.querySelectorAll(
+        'input[name="siteType"]',
+      );
+      const extraPagesInput = document.getElementById("extraPages");
+      const extraPagesNote = document.getElementById("extraPagesNote");
+
+      function updateExtraPages() {
+        const selected = document.querySelector(
+          'input[name="siteType"]:checked',
+        );
+        if (selected && selected.value === "onepage") {
+          extraPagesInput.value = 0;
+          extraPagesInput.disabled = true;
+          extraPagesNote.classList.remove("hidden");
+          // Desabilitar complementos para One Page
+          document.querySelector(
+            'input[name="complementos"][value="pagamento"]',
+          ).disabled = true;
+          document.querySelector(
+            'input[name="complementos"][value="login"]',
+          ).disabled = true;
+          // Desmarcar se estiver marcado
+          document.querySelector(
+            'input[name="complementos"][value="pagamento"]',
+          ).checked = false;
+          document.querySelector(
+            'input[name="complementos"][value="login"]',
+          ).checked = false;
+        } else {
+          extraPagesInput.disabled = false;
+          extraPagesNote.classList.add("hidden");
+          // Habilitar complementos
+          document.querySelector(
+            'input[name="complementos"][value="pagamento"]',
+          ).disabled = false;
+          document.querySelector(
+            'input[name="complementos"][value="login"]',
+          ).disabled = false;
+        }
+      }
+
+      siteTypeRadios.forEach((radio) => {
+        radio.addEventListener("change", updateExtraPages);
+      });
+
+      // Exemplo de cálculo (ajuste conforme sua lógica de preços)
+      document
+        .getElementById("priceForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          let total = 0;
+          const siteType = document.querySelector(
+            'input[name="siteType"]:checked',
+          ).value;
+
+          // Páginas base por tipo
+          const pagesBase = {
+            onepage: 1,
+            landing: 1,
+            institucional: 5,
+            ecommerce: 5,
+            sistema: 4,
+          };
+
+          // Tempo base por tipo [min, max]
+          const timeBase = {
+            onepage: [3, 5],
+            landing: [5, 7],
+            institucional: [7, 12],
+            ecommerce: [15, 25],
+            sistema: [20, 40],
+          };
+
+          switch (siteType) {
+            case "onepage":
+              total += 600;
+              break;
+            case "landing":
+              total += 900;
+              break;
+            case "institucional":
+              total += 1800;
+              break;
+            case "ecommerce":
+              total += 3500;
+              break;
+            case "sistema":
+              total += 5000;
+              break;
+          }
+          let pages = pagesBase[siteType];
+          let extraPages = parseInt(extraPagesInput.value || 0);
+          if (siteType !== "onepage") {
+            total += extraPages * 200;
+            pages += extraPages;
+          }
+          // Complemento login adiciona 3 páginas sem cobrar extra
+          if (
+            document.querySelector(
+              'input[name="complementos"][value="login"]:checked',
+            )
+          ) {
+            pages += 3;
+          }
+          // Complemento pagamento adiciona 3 páginas
+          if (
+            document.querySelector(
+              'input[name="complementos"][value="pagamento"]:checked',
+            )
+          ) {
+            pages += 3;
+          }
+          document
+            .querySelectorAll('input[name="complementos"]:checked')
+            .forEach((cb) => {
+              if (cb.value === "pagamento") total += 800;
+              if (cb.value === "whatsapp") total += 400;
+              if (cb.value === "login") total += 1000;
+            });
+          document
+            .querySelectorAll('input[name="servicos"]:checked')
+            .forEach((cb) => {
+              if (cb.value === "manutencao") total += 300;
+              if (cb.value === "atualizacoes") total += 400;
+            });
+
+          // Calcular tempo: base + 1 dia por página extra
+          let timeMin = timeBase[siteType][0] + extraPages;
+          let timeMax = timeBase[siteType][1] + extraPages;
+
+          document.getElementById("result").textContent =
+            `Valor estimado: R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+          document.getElementById("pages").textContent =
+            `Quantidade de páginas: ${pages}`;
+          document.getElementById("time").textContent =
+            `Prazo estimado: ${timeMin}-${timeMax} dias`;
+        });
+
+      // Inicializa estado do campo página extra
+      updateExtraPages();
+    </script>
+  </body>
+</html>
