@@ -5,302 +5,409 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Calculadora de Preço de Venda</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      input[type='range'] { accent-color: #2563eb; }
+      .disabled-card { opacity: 0.45; pointer-events: none; }
+    </style>
   </head>
-  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl">
-      <h1 class="text-2xl font-bold mb-6 text-center">
-        Calculadora de Preço de Venda
-      </h1>
-      <form id="priceForm" class="space-y-6">
-        <!-- Tipo do site -->
-        <div>
-          <label class="block font-semibold mb-2">Tipo do site</label>
-          <div class="space-y-2">
-            <label class="flex items-center">
-              <input
-                type="radio"
-                name="siteType"
-                value="onepage"
-                class="mr-2"
-                required
-              />
-              One Page
-              <span class="ml-2 text-xs text-gray-500">(3-5 dias)</span>
-            </label>
-            <label class="flex items-center">
-              <input
-                type="radio"
-                name="siteType"
-                value="landing"
-                class="mr-2"
-              />
-              Landing Page
-              <span class="ml-2 text-xs text-gray-500">(5-7 dias)</span>
-            </label>
-            <label class="flex items-center">
-              <input
-                type="radio"
-                name="siteType"
-                value="institucional"
-                class="mr-2"
-              />
-              Site Institucional
-              <span class="ml-2 text-xs text-gray-500">(7-12 dias)</span>
-            </label>
-            <label class="flex items-center">
-              <input
-                type="radio"
-                name="siteType"
-                value="ecommerce"
-                class="mr-2"
-              />
-              E-commerce
-              <span class="ml-2 text-xs text-gray-500">(15-25 dias)</span>
-            </label>
-            <label class="flex items-center">
-              <input
-                type="radio"
-                name="siteType"
-                value="sistema"
-                class="mr-2"
-              />
-              Sistema de Gestão Web
-              <span class="ml-2 text-xs text-gray-500">(20-40 dias)</span>
-            </label>
-          </div>
-        </div>
-        <!-- Página extra -->
-        <div>
-          <label class="block font-semibold mb-2">Página extra</label>
-          <div class="flex items-center space-x-2">
-            <input
-              type="number"
-              id="extraPages"
-              name="extraPages"
-              min="0"
-              value="0"
-              class="w-20 p-2 border rounded"
-              disabled
-            />
-            <span class="text-sm text-gray-500">Quantidade</span>
-          </div>
-          <p id="extraPagesNote" class="text-xs text-red-500 mt-1 hidden">
-            One Page não permite páginas extras.
-          </p>
-        </div>
-        <!-- Complementos -->
-        <div>
-          <label class="block font-semibold mb-2">Complementos</label>
-          <div class="space-y-2">
-            <label class="flex items-center">
-              <input
-                type="checkbox"
-                name="complementos"
-                value="pagamento"
-                class="mr-2"
-              />
-              Integração com Pagamento
-            </label>
-            <label class="flex items-center">
-              <input
-                type="checkbox"
-                name="complementos"
-                value="whatsapp"
-                class="mr-2"
-              />
-              Integração com Whatsapp
-            </label>
-            <label class="flex items-center">
-              <input
-                type="checkbox"
-                name="complementos"
-                value="login"
-                class="mr-2"
-              />
-              Área de login com dashboard administrativa
-            </label>
-          </div>
-        </div>
-        <!-- Serviços adicionais -->
-        <div>
-          <label class="block font-semibold mb-2">Serviços adicionais</label>
-          <div class="space-y-2">
-            <label class="flex items-center">
-              <input
-                type="checkbox"
-                name="servicos"
-                value="manutencao"
-                class="mr-2"
-              />
-              Manutenção mensal
-            </label>
-            <label class="flex items-center">
-              <input
-                type="checkbox"
-                name="servicos"
-                value="atualizacoes"
-                class="mr-2"
-              />
-              Atualizações futuras
-            </label>
-          </div>
-        </div>
-        <button
-          type="submit"
-          class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 font-semibold"
-        >
-          Calcular Valor
-        </button>
-      </form>
-      <div
-        id="result"
-        class="mt-6 text-center text-lg font-bold text-green-600"
-      ></div>
-      <div id="pages" class="mt-2 text-center text-md text-gray-700"></div>
-      <div id="time" class="mt-2 text-center text-md text-gray-700"></div>
-    </div>
-    <script>
-      // Habilita/desabilita campo de página extra conforme tipo do site
-      const siteTypeRadios = document.querySelectorAll(
-        'input[name="siteType"]',
-      );
-      const extraPagesInput = document.getElementById("extraPages");
-      const extraPagesNote = document.getElementById("extraPagesNote");
+  <body class="bg-slate-100 min-h-screen py-8 px-4">
+    <main class="max-w-5xl mx-auto">
+      <section class="text-center mb-8">
+        <p class="text-sm uppercase tracking-[0.25em] text-blue-600 font-bold">Orçamento web</p>
+        <h1 class="text-3xl md:text-4xl font-black text-slate-900 mt-2">Calculadora de Preço de Venda</h1>
+        <p class="text-slate-600 mt-3 max-w-2xl mx-auto">
+          Monte um orçamento rápido com tipo de site, páginas extras, complementos, serviços adicionais e desconto personalizado.
+        </p>
+      </section>
 
-      function updateExtraPages() {
-        const selected = document.querySelector(
-          'input[name="siteType"]:checked',
-        );
-        if (selected && selected.value === "onepage") {
-          extraPagesInput.value = 0;
-          extraPagesInput.disabled = true;
-          extraPagesNote.classList.remove("hidden");
-          // Desabilitar complementos para One Page
-          document.querySelector(
-            'input[name="complementos"][value="pagamento"]',
-          ).disabled = true;
-          document.querySelector(
-            'input[name="complementos"][value="login"]',
-          ).disabled = true;
-          // Desmarcar se estiver marcado
-          document.querySelector(
-            'input[name="complementos"][value="pagamento"]',
-          ).checked = false;
-          document.querySelector(
-            'input[name="complementos"][value="login"]',
-          ).checked = false;
-        } else {
-          extraPagesInput.disabled = false;
-          extraPagesNote.classList.add("hidden");
-          // Habilitar complementos
-          document.querySelector(
-            'input[name="complementos"][value="pagamento"]',
-          ).disabled = false;
-          document.querySelector(
-            'input[name="complementos"][value="login"]',
-          ).disabled = false;
+      <form id="priceForm" class="grid lg:grid-cols-[1.3fr_0.7fr] gap-6 items-start">
+        <div class="space-y-6">
+          <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <div class="flex items-center justify-between gap-4 mb-4">
+              <div>
+                <h2 class="text-xl font-bold text-slate-900">1. Tipo do site</h2>
+                <p class="text-sm text-slate-500">Escolha o modelo principal do projeto.</p>
+              </div>
+            </div>
+            <div id="siteTypes" class="grid md:grid-cols-2 gap-4"></div>
+          </section>
+
+          <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h2 class="text-xl font-bold text-slate-900">2. Páginas extras</h2>
+            <p class="text-sm text-slate-500 mt-1">Cada página extra adiciona R$ 200 e aumenta o prazo em 1 dia.</p>
+            <div class="mt-4 flex items-center gap-3">
+              <button type="button" id="minusPage" class="w-10 h-10 rounded-xl border border-slate-300 font-bold hover:bg-slate-50">−</button>
+              <input id="extraPages" type="number" min="0" value="0" class="w-24 text-center p-3 border border-slate-300 rounded-xl font-bold" />
+              <button type="button" id="plusPage" class="w-10 h-10 rounded-xl border border-slate-300 font-bold hover:bg-slate-50">+</button>
+              <span id="extraPagesNote" class="text-sm text-red-500 hidden">One Page não permite páginas extras.</span>
+            </div>
+          </section>
+
+          <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h2 class="text-xl font-bold text-slate-900">3. Complementos</h2>
+            <p class="text-sm text-slate-500 mt-1">Recursos que aumentam o valor e a complexidade do projeto.</p>
+            <div id="addons" class="grid md:grid-cols-2 gap-4 mt-4"></div>
+          </section>
+
+          <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h2 class="text-xl font-bold text-slate-900">4. Serviços adicionais</h2>
+            <p class="text-sm text-slate-500 mt-1">Itens úteis para entregar o site mais completo e profissional.</p>
+            <div id="services" class="grid md:grid-cols-2 gap-4 mt-4"></div>
+          </section>
+        </div>
+
+        <aside class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 lg:sticky lg:top-6">
+          <h2 class="text-xl font-bold text-slate-900">Resumo do orçamento</h2>
+          <p class="text-sm text-slate-500 mt-1">Atualiza automaticamente conforme você escolhe.</p>
+
+          <div class="mt-6">
+            <div class="flex justify-between text-sm font-semibold text-slate-700">
+              <label for="discount">Desconto</label>
+              <span id="discountLabel">0%</span>
+            </div>
+            <input id="discount" type="range" min="0" max="100" value="0" class="w-full mt-3" />
+            <input id="discountNumber" type="number" min="0" max="100" value="0" class="mt-2 w-full p-3 border border-slate-300 rounded-xl" />
+            <p class="text-xs text-slate-500 mt-2">Use desconto com cuidado para não trabalhar muito por pouco.</p>
+          </div>
+
+          <div class="mt-6 rounded-2xl bg-slate-50 border border-slate-200 p-5 space-y-3">
+            <div class="flex justify-between text-sm"><span class="text-slate-500">Subtotal</span><strong id="subtotal">R$ 0,00</strong></div>
+            <div class="flex justify-between text-sm"><span class="text-slate-500">Desconto</span><strong id="discountValue">− R$ 0,00</strong></div>
+            <div class="border-t border-slate-200 pt-3 flex justify-between items-end">
+              <span class="text-slate-600 font-semibold">Total</span>
+              <strong id="total" class="text-3xl text-green-600">R$ 0,00</strong>
+            </div>
+          </div>
+
+          <div class="mt-6 space-y-3 text-sm">
+            <div class="flex justify-between"><span class="text-slate-500">Páginas</span><strong id="pages">0</strong></div>
+            <div class="flex justify-between"><span class="text-slate-500">Prazo</span><strong id="time">0–0 dias</strong></div>
+            <div class="flex justify-between"><span class="text-slate-500">Tipo escolhido</span><strong id="chosenType">Nenhum</strong></div>
+          </div>
+
+          <div class="mt-6">
+            <h3 class="font-bold text-slate-900 mb-2">Itens escolhidos</h3>
+            <ul id="selectedItems" class="text-sm text-slate-600 space-y-1 list-disc pl-5">
+              <li>Nenhum item selecionado ainda.</li>
+            </ul>
+          </div>
+
+          <button type="button" id="copyBudget" class="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 font-bold">
+            Copiar resumo
+          </button>
+          <p id="copyMessage" class="hidden text-center text-green-600 text-sm mt-2 font-semibold">Resumo copiado!</p>
+        </aside>
+      </form>
+    </main>
+
+    <script>
+      const siteOptions = {
+        onepage: {
+          title: 'One Page',
+          price: 600,
+          pages: 1,
+          time: [3, 5],
+          description: 'Site simples em uma única página, ideal para apresentação rápida, portfólio ou divulgação de um serviço.'
+        },
+        landing: {
+          title: 'Landing Page',
+          price: 900,
+          pages: 1,
+          time: [5, 7],
+          description: 'Página focada em conversão, feita para captar clientes, receber contatos ou vender uma oferta específica.'
+        },
+        institucional: {
+          title: 'Site Institucional',
+          price: 1800,
+          pages: 5,
+          time: [7, 12],
+          description: 'Site profissional para empresas, com páginas como início, sobre, serviços, equipe e contato.'
+        },
+        ecommerce: {
+          title: 'E-commerce',
+          price: 3500,
+          pages: 5,
+          time: [15, 25],
+          description: 'Loja virtual para vender produtos online, com catálogo, carrinho, pedidos e estrutura de pagamento.'
+        },
+        sistema: {
+          title: 'Sistema de Gestão Web',
+          price: 5000,
+          pages: 4,
+          time: [20, 40],
+          description: 'Sistema personalizado com login, controle de dados, painel administrativo, relatórios e regras de acesso.'
         }
+      };
+
+      const addons = {
+        pagamento: {
+          title: 'Integração com pagamento',
+          price: 800,
+          pages: 3,
+          time: 3,
+          blockedFor: ['onepage'],
+          description: 'Configuração para receber pagamentos online por plataformas como Mercado Pago, Stripe ou PagSeguro.'
+        },
+        whatsapp: {
+          title: 'Botão de WhatsApp',
+          price: 120,
+          pages: 0,
+          time: 0,
+          description: 'Botão direto para o cliente chamar no WhatsApp, podendo ter mensagem automática pronta.'
+        },
+        login: {
+          title: 'Login + dashboard administrativo',
+          price: 1000,
+          pages: 3,
+          time: 5,
+          blockedFor: ['onepage'],
+          description: 'Área de acesso com usuários, senha e painel para visualizar ou gerenciar informações.'
+        },
+        formulario: {
+          title: 'Formulário de contato',
+          price: 150,
+          pages: 0,
+          time: 1,
+          description: 'Formulário para receber nome, telefone, e-mail e mensagem do visitante.'
+        },
+        maps: {
+          title: 'Google Maps',
+          price: 100,
+          pages: 0,
+          time: 0,
+          description: 'Mapa incorporado mostrando endereço da empresa, loja ou local de atendimento.'
+        },
+        agendamento: {
+          title: 'Sistema de agendamento',
+          price: 700,
+          pages: 2,
+          time: 4,
+          blockedFor: ['onepage'],
+          description: 'Permite que clientes escolham horários, datas ou serviços disponíveis para reserva.'
+        }
+      };
+
+      const services = {
+        manutencao: {
+          title: 'Manutenção mensal',
+          price: 300,
+          description: 'Acompanhamento mensal para ajustes, pequenas correções e suporte básico.'
+        },
+        atualizacoes: {
+          title: 'Atualizações futuras',
+          price: 400,
+          description: 'Pacote para mudanças futuras no conteúdo, textos, imagens ou pequenas funções.'
+        },
+        seo: {
+          title: 'SEO básico',
+          price: 250,
+          description: 'Configuração básica para o site aparecer melhor no Google, com títulos, descrições e estrutura organizada.'
+        },
+        hospedagem: {
+          title: 'Configuração de domínio/hospedagem',
+          price: 150,
+          description: 'Ajuda para colocar o site no ar, configurar domínio, hospedagem e links principais.'
+        },
+        responsivo: {
+          title: 'Otimização mobile extra',
+          price: 200,
+          description: 'Ajustes extras para deixar a experiência mais bonita em celular e tablet.'
+        },
+        treinamento: {
+          title: 'Treinamento do cliente',
+          price: 150,
+          description: 'Explicação simples para o cliente aprender a usar o site, painel ou sistema.'
+        }
+      };
+
+      const siteTypesContainer = document.getElementById('siteTypes');
+      const addonsContainer = document.getElementById('addons');
+      const servicesContainer = document.getElementById('services');
+      const extraPagesInput = document.getElementById('extraPages');
+      const extraPagesNote = document.getElementById('extraPagesNote');
+      const discount = document.getElementById('discount');
+      const discountNumber = document.getElementById('discountNumber');
+
+      function brl(value) {
+        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       }
 
-      siteTypeRadios.forEach((radio) => {
-        radio.addEventListener("change", updateExtraPages);
-      });
+      function createRadioCard(key, item) {
+        return `
+          <label class="cursor-pointer block rounded-2xl border border-slate-200 p-4 hover:border-blue-400 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50 transition">
+            <div class="flex items-start gap-3">
+              <input type="radio" name="siteType" value="${key}" class="mt-1" required />
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="font-bold text-slate-900">${item.title}</h3>
+                  <span class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">${item.time[0]}–${item.time[1]} dias</span>
+                </div>
+                <p class="text-sm text-slate-600 mt-2">${item.description}</p>
+                <p class="text-blue-700 font-black mt-3">${brl(item.price)}</p>
+              </div>
+            </div>
+          </label>
+        `;
+      }
 
-      // Exemplo de cálculo (ajuste conforme sua lógica de preços)
-      document
-        .getElementById("priceForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-          let total = 0;
-          const siteType = document.querySelector(
-            'input[name="siteType"]:checked',
-          ).value;
+      function createCheckboxCard(key, item, name) {
+        return `
+          <label id="card-${key}" class="cursor-pointer block rounded-2xl border border-slate-200 p-4 hover:border-blue-400 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50 transition">
+            <div class="flex items-start gap-3">
+              <input type="checkbox" name="${name}" value="${key}" class="mt-1" />
+              <div>
+                <h3 class="font-bold text-slate-900">${item.title}</h3>
+                <p class="text-sm text-slate-600 mt-2">${item.description}</p>
+                <p class="text-blue-700 font-black mt-3">+ ${brl(item.price)}</p>
+              </div>
+            </div>
+          </label>
+        `;
+      }
 
-          // Páginas base por tipo
-          const pagesBase = {
-            onepage: 1,
-            landing: 1,
-            institucional: 5,
-            ecommerce: 5,
-            sistema: 4,
-          };
+      siteTypesContainer.innerHTML = Object.entries(siteOptions).map(([key, item]) => createRadioCard(key, item)).join('');
+      addonsContainer.innerHTML = Object.entries(addons).map(([key, item]) => createCheckboxCard(key, item, 'addons')).join('');
+      servicesContainer.innerHTML = Object.entries(services).map(([key, item]) => createCheckboxCard(key, item, 'services')).join('');
 
-          // Tempo base por tipo [min, max]
-          const timeBase = {
-            onepage: [3, 5],
-            landing: [5, 7],
-            institucional: [7, 12],
-            ecommerce: [15, 25],
-            sistema: [20, 40],
-          };
+      function getSelectedSite() {
+        const selected = document.querySelector('input[name="siteType"]:checked');
+        return selected ? selected.value : null;
+      }
 
-          switch (siteType) {
-            case "onepage":
-              total += 600;
-              break;
-            case "landing":
-              total += 900;
-              break;
-            case "institucional":
-              total += 1800;
-              break;
-            case "ecommerce":
-              total += 3500;
-              break;
-            case "sistema":
-              total += 5000;
-              break;
-          }
-          let pages = pagesBase[siteType];
-          let extraPages = parseInt(extraPagesInput.value || 0);
-          if (siteType !== "onepage") {
-            total += extraPages * 200;
-            pages += extraPages;
-          }
-          // Complemento login adiciona 3 páginas sem cobrar extra
-          if (
-            document.querySelector(
-              'input[name="complementos"][value="login"]:checked',
-            )
-          ) {
-            pages += 3;
-          }
-          // Complemento pagamento adiciona 3 páginas
-          if (
-            document.querySelector(
-              'input[name="complementos"][value="pagamento"]:checked',
-            )
-          ) {
-            pages += 3;
-          }
-          document
-            .querySelectorAll('input[name="complementos"]:checked')
-            .forEach((cb) => {
-              if (cb.value === "pagamento") total += 800;
-              if (cb.value === "whatsapp") total += 400;
-              if (cb.value === "login") total += 1000;
-            });
-          document
-            .querySelectorAll('input[name="servicos"]:checked')
-            .forEach((cb) => {
-              if (cb.value === "manutencao") total += 300;
-              if (cb.value === "atualizacoes") total += 400;
-            });
+      function clampDiscount(value) {
+        value = Number(value || 0);
+        if (value < 0) return 0;
+        if (value > 100) return 100;
+        return value;
+      }
 
-          // Calcular tempo: base + 1 dia por página extra
-          let timeMin = timeBase[siteType][0] + extraPages;
-          let timeMax = timeBase[siteType][1] + extraPages;
+      function updateBlockedOptions() {
+        const site = getSelectedSite();
+        const isOnePage = site === 'onepage';
 
-          document.getElementById("result").textContent =
-            `Valor estimado: R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
-          document.getElementById("pages").textContent =
-            `Quantidade de páginas: ${pages}`;
-          document.getElementById("time").textContent =
-            `Prazo estimado: ${timeMin}-${timeMax} dias`;
+        extraPagesInput.disabled = isOnePage;
+        extraPagesNote.classList.toggle('hidden', !isOnePage);
+        if (isOnePage) extraPagesInput.value = 0;
+
+        Object.entries(addons).forEach(([key, item]) => {
+          const input = document.querySelector(`input[name="addons"][value="${key}"]`);
+          const card = document.getElementById(`card-${key}`);
+          const blocked = item.blockedFor && item.blockedFor.includes(site);
+          input.disabled = !!blocked;
+          if (blocked) input.checked = false;
+          card.classList.toggle('disabled-card', !!blocked);
+        });
+      }
+
+      function calculate() {
+        updateBlockedOptions();
+        const siteKey = getSelectedSite();
+        let subtotal = 0;
+        let pages = 0;
+        let timeMin = 0;
+        let timeMax = 0;
+        const selectedItems = [];
+
+        if (siteKey) {
+          const site = siteOptions[siteKey];
+          subtotal += site.price;
+          pages += site.pages;
+          timeMin += site.time[0];
+          timeMax += site.time[1];
+          selectedItems.push(`${site.title}: ${brl(site.price)}`);
+        }
+
+        const extraPages = siteKey === 'onepage' ? 0 : Math.max(0, parseInt(extraPagesInput.value || 0));
+        if (extraPages > 0) {
+          subtotal += extraPages * 200;
+          pages += extraPages;
+          timeMin += extraPages;
+          timeMax += extraPages;
+          selectedItems.push(`${extraPages} página(s) extra(s): ${brl(extraPages * 200)}`);
+        }
+
+        document.querySelectorAll('input[name="addons"]:checked').forEach(input => {
+          const item = addons[input.value];
+          subtotal += item.price;
+          pages += item.pages || 0;
+          timeMin += item.time || 0;
+          timeMax += item.time || 0;
+          selectedItems.push(`${item.title}: ${brl(item.price)}`);
         });
 
-      // Inicializa estado do campo página extra
-      updateExtraPages();
+        document.querySelectorAll('input[name="services"]:checked').forEach(input => {
+          const item = services[input.value];
+          subtotal += item.price;
+          selectedItems.push(`${item.title}: ${brl(item.price)}`);
+        });
+
+        const discountPercent = clampDiscount(discount.value);
+        const discountValue = subtotal * (discountPercent / 100);
+        const total = subtotal - discountValue;
+
+        document.getElementById('discountLabel').textContent = `${discountPercent}%`;
+        document.getElementById('subtotal').textContent = brl(subtotal);
+        document.getElementById('discountValue').textContent = `− ${brl(discountValue)}`;
+        document.getElementById('total').textContent = brl(total);
+        document.getElementById('pages').textContent = pages;
+        document.getElementById('time').textContent = `${timeMin}–${timeMax} dias`;
+        document.getElementById('chosenType').textContent = siteKey ? siteOptions[siteKey].title : 'Nenhum';
+
+        document.getElementById('selectedItems').innerHTML = selectedItems.length
+          ? selectedItems.map(item => `<li>${item}</li>`).join('')
+          : '<li>Nenhum item selecionado ainda.</li>';
+      }
+
+      document.addEventListener('change', calculate);
+      document.addEventListener('input', calculate);
+
+      document.getElementById('minusPage').addEventListener('click', () => {
+        extraPagesInput.value = Math.max(0, parseInt(extraPagesInput.value || 0) - 1);
+        calculate();
+      });
+
+      document.getElementById('plusPage').addEventListener('click', () => {
+        if (!extraPagesInput.disabled) {
+          extraPagesInput.value = parseInt(extraPagesInput.value || 0) + 1;
+          calculate();
+        }
+      });
+
+      discount.addEventListener('input', () => {
+        discountNumber.value = clampDiscount(discount.value);
+        calculate();
+      });
+
+      discountNumber.addEventListener('input', () => {
+        discountNumber.value = clampDiscount(discountNumber.value);
+        discount.value = discountNumber.value;
+        calculate();
+      });
+
+      document.getElementById('copyBudget').addEventListener('click', async () => {
+        const text = [
+          'Resumo do orçamento',
+          `Tipo: ${document.getElementById('chosenType').textContent}`,
+          `Páginas: ${document.getElementById('pages').textContent}`,
+          `Prazo: ${document.getElementById('time').textContent}`,
+          `Subtotal: ${document.getElementById('subtotal').textContent}`,
+          `Desconto: ${document.getElementById('discountLabel').textContent}`,
+          `Total: ${document.getElementById('total').textContent}`,
+          '',
+          'Itens:',
+          ...Array.from(document.querySelectorAll('#selectedItems li')).map(li => `- ${li.textContent}`)
+        ].join('\n');
+
+        try {
+          await navigator.clipboard.writeText(text);
+          document.getElementById('copyMessage').classList.remove('hidden');
+          setTimeout(() => document.getElementById('copyMessage').classList.add('hidden'), 2000);
+        } catch (error) {
+          alert(text);
+        }
+      });
+
+      calculate();
     </script>
   </body>
 </html>
